@@ -10,6 +10,11 @@
   --ok-soft: #e4f5eb;
   --ng: #c0392b;
   --ng-soft: #fdecea;
+  /* グラフの系列色（dataviz 既定パレットの先頭3色。全組み合わせで色覚多様性チェック済み） */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --grid: #e4dde8;
   font-family: system-ui, 'Hiragino Sans', 'Yu Gothic UI', Meiryo, sans-serif;
   color: var(--text);
   background: var(--bg);

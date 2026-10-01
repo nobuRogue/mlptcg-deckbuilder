@@ -13,8 +13,13 @@ header {
   background: var(--panel);
 }
 
+header {
+  flex-wrap: wrap;
+}
+
 header h1 {
   margin: 0;
+  white-space: nowrap;
   font-size: 18px;
   color: var(--accent);
 }
@@ -296,6 +301,116 @@ header h1 {
 .entry-count b {
   width: 18px;
   text-align: center;
+}
+
+/* ---- ハーモニー分布 ---- */
+
+.count-plain {
+  color: var(--muted);
+  font-weight: normal;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hc-plot {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  padding-top: 4px;
+}
+
+.hc-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 128px;
+  border-radius: 4px 4px 0 0;
+  cursor: default;
+  outline-offset: -2px;
+}
+
+.hc-col.active {
+  background: var(--accent-soft);
+}
+
+.hc-total {
+  font-size: 11px;
+  color: var(--muted);
+  min-height: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hc-bar {
+  width: min(70%, 28px);
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+}
+
+.hc-seg {
+  min-height: 2px;
+}
+
+/* 積み上げの最上段だけ角を丸める（column-reverse なので最後の要素が上） */
+.hc-seg:last-child {
+  border-radius: 4px 4px 0 0;
+}
+
+.s1 {
+  background: var(--series-1);
+}
+
+.s2 {
+  background: var(--series-2);
+}
+
+.s3 {
+  background: var(--series-3);
+}
+
+.hc-x {
+  font-size: 12px;
+  color: var(--muted);
+  align-self: stretch;
+  text-align: center;
+  border-top: 1px solid var(--grid);
+  padding: 2px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.hc-detail {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  min-height: 18px;
+}
+
+.hc-detail b {
+  color: var(--text);
+}
+
+.hc-legend {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.hc-legend li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hc-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
 }
 
 /* ---- モーダル ---- */

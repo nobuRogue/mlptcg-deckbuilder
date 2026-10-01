@@ -121,3 +121,32 @@ export function deckToText(name: string, deck: DeckCards, lookup: Map<string, Ca
   }
   return lines.join('\n')
 }
+
+// ---- 分析 ----
+
+export const MAIN_TYPES = ['キャラ', 'イベント', 'アイテム'] as const
+export type MainType = (typeof MAIN_TYPES)[number]
+
+export interface HarmonyBucket {
+  /** ハーモニーの値。null はハーモニー表記なし */
+  harmony: number | null
+  byType: Record<MainType, number>
+  total: number
+}
+
+/** メインデッキのハーモニー別・種別ごとの枚数。1〜7 は常に含め、それ以上は該当がある場合のみ */
+export function harmonyDistribution(deck: DeckCards, lookup: Map<string, Card>): HarmonyBucket[] {
+  const buckets = new Map<number | null, HarmonyBucket>()
+  const bucket = (h: number | null) => {
+    let b = buckets.get(h)
+    if (!b) buckets.set(h, (b = { harmony: h, byType: { キャラ: 0, イベント: 0, アイテム: 0 }, total: 0 }))
+    return b
+  }
+  for (let h = 1; h <= 7; h++) bucket(h)
+  for (const { card, count } of groupBySection(deck, lookup).main) {
+    const b = bucket(card.harmony)
+    b.byType[card.type as MainType] += count
+    b.total += count
+  }
+  return [...buckets.values()].sort((a, b) => (a.harmony ?? Infinity) - (b.harmony ?? Infinity))
+}

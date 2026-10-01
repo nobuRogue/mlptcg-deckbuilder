@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { type Card, cardById } from '../lib/cards'
 import { SECTIONS, deckToText, encodeDeck, groupBySection, sectionTotal, validate } from '../lib/deck'
 import type { SavedDeck } from '../lib/storage'
+import { HarmonyChart } from './HarmonyChart'
 
 interface Props {
   deck: SavedDeck
@@ -69,6 +70,8 @@ export function DeckPanel(p: Props) {
           {errors.map((e) => <li key={e}>{e}</li>)}
         </ul>
       )}
+
+      <HarmonyChart deck={p.deck.cards} />
 
       {SECTIONS.map((s) => {
         const entries = groups[s.key]

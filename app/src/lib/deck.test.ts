@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { type Card, cards } from './cards'
-import { type DeckCards, canAdd, decodeDeck, encodeDeck, validate } from './deck'
+import { type DeckCards, canAdd, decodeDeck, encodeDeck, harmonyDistribution, validate } from './deck'
 
 const mk = (rid: string, over: Partial<Card>): Card => ({
   recordId: rid,
@@ -73,6 +73,19 @@ describe('validate', () => {
     d.s5 = 0
     d.s2 = 2
     expect(validate(d, lookup)).toContain('ストーリーの段階2が2枚です（各1枚必要）')
+  })
+})
+
+describe('harmonyDistribution', () => {
+  it('メインデッキだけをハーモニー別・種別ごとに数える', () => {
+    const lk = new Map(lookup)
+    lk.set('e1', mk('e1', { type: 'イベント', harmony: 3 }))
+    lk.set('h9', mk('h9', { harmony: 9 }))
+    const dist = harmonyDistribution({ '1': 1, m0: 4, e1: 2, h9: 1, c0: 4 }, lk)
+    expect(dist.map((b) => b.harmony)).toEqual([1, 2, 3, 4, 5, 6, 7, 9])
+    expect(dist[0]).toMatchObject({ total: 4, byType: { キャラ: 4, イベント: 0, アイテム: 0 } })
+    expect(dist[2]).toMatchObject({ total: 2, byType: { キャラ: 0, イベント: 2, アイテム: 0 } })
+    expect(dist.reduce((n, b) => n + b.total, 0)).toBe(7)
   })
 })
 
