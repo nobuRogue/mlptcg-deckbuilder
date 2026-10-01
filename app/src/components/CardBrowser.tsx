@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CARD_TYPES, type Card, RARITIES, SUB_SERIES, cards } from '../lib/cards'
+import { CardZoom } from './CardZoom'
 
 interface Props {
   countOf: (c: Card) => number
@@ -17,6 +18,7 @@ export function CardBrowser({ countOf, onAdd, onShow }: Props) {
   const [harmony, setHarmony] = useState('')
   const [idea, setIdea] = useState('')
   const [showParallel, setShowParallel] = useState(true)
+  const [zoomed, setZoomed] = useState<Card | null>(null)
 
   const filtered = useMemo(() => {
     const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
@@ -67,10 +69,24 @@ export function CardBrowser({ countOf, onAdd, onShow }: Props) {
           const n = countOf(c)
           return (
             <li key={c.recordId} className="tile">
-              <button type="button" className="tile-img" onClick={() => onAdd(c)} title="クリックでデッキに追加">
-                <img src={c.image} alt={c.name} loading="lazy" />
-                {n > 0 && <span className="badge">{n}</span>}
-              </button>
+              <div className="tile-frame">
+                <button type="button" className="tile-img" onClick={() => onAdd(c)} title="クリックでデッキに追加">
+                  <img src={c.image} alt={c.name} loading="lazy" />
+                  {n > 0 && <span className="badge">{n}</span>}
+                </button>
+                <button
+                  type="button"
+                  className="zoom-btn"
+                  onClick={() => setZoomed(c)}
+                  title="拡大表示"
+                  aria-label={`${c.name}を拡大表示`}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="10.5" cy="10.5" r="6.5" />
+                    <path d="M15.5 15.5 20 20M10.5 7.5v6M7.5 10.5h6" />
+                  </svg>
+                </button>
+              </div>
               <button type="button" className="tile-info" onClick={() => onShow(c)}>
                 <span className="tile-no">{c.id}</span>
                 <span className="tile-name">{c.name}</span>
@@ -79,6 +95,7 @@ export function CardBrowser({ countOf, onAdd, onShow }: Props) {
           )
         })}
       </ul>
+      {zoomed && <CardZoom card={zoomed} onClose={() => setZoomed(null)} />}
     </section>
   )
 }
