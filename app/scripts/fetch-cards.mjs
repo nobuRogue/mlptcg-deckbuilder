@@ -32,7 +32,7 @@ const cards = raw
       harmony: toNum(c.harmony),
       idea: toNum(c.idea),
       keywords: c.keyword ? c.keyword.split('/').map((s) => s.trim()).filter(Boolean) : [],
-      effect: c.effect,
+      effect: (c.effect ?? '').replace(/\r\n?/g, '\n'),
     }
     if (c.type === 'ストーリー') {
       card.storyTitle = c.name.split('——')[0].trim()

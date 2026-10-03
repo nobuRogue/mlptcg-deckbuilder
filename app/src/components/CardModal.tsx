@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import type { Card } from '../lib/cards'
+import { type Card, isDailyScene, isDeckCard } from '../lib/cards'
+import { EffectText } from './EffectText'
 
 interface Props {
   card: Card
@@ -32,12 +33,17 @@ export function CardModal({ card, count, canAdd, onAdd, onRemove, onClose }: Pro
             {card.idea != null && (<><dt>アイデア</dt><dd>{card.idea}</dd></>)}
             {card.keywords.length > 0 && (<><dt>キーワード</dt><dd>{card.keywords.join(' / ')}</dd></>)}
           </dl>
-          {card.effect && <p className="effect">{card.effect}</p>}
-          <div className="counter">
-            <button type="button" onClick={onRemove} disabled={count === 0}>−</button>
-            <span>{count} 枚</span>
-            <button type="button" onClick={onAdd} disabled={!canAdd}>＋</button>
-          </div>
+          {card.effect && <EffectText text={card.effect} />}
+          {isDailyScene(card) && <p className="note">日常シーン：同じカードを何枚でもシーンデッキに入れられます</p>}
+          {isDeckCard(card) ? (
+            <div className="counter">
+              <button type="button" onClick={onRemove} disabled={count === 0}>−</button>
+              <span>{count} 枚</span>
+              <button type="button" onClick={onAdd} disabled={!canAdd}>＋</button>
+            </div>
+          ) : (
+            <p className="note">トークンはゲーム中に用意する目印で、デッキには入れられません</p>
+          )}
           <button type="button" className="close" onClick={onClose}>閉じる</button>
         </div>
       </div>

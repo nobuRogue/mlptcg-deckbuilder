@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { type Card, cards } from './cards'
+import { type Card, cardById, cards } from './cards'
 import { type DeckCards, canAdd, decodeDeck, encodeDeck, harmonyDistribution, validate } from './deck'
 
 const mk = (rid: string, over: Partial<Card>): Card => ({
@@ -76,6 +76,26 @@ describe('validate', () => {
   })
 })
 
+describe('日常シーン・トークン', () => {
+  const daily = mk('d1', { type: 'シーン', keywords: ['広場', '日常'] })
+  const token = mk('t1', { type: 'トークン', id: 'TK-01', cardNo: 'TK-01' })
+  const lk = new Map([...lookup, ['d1', daily], ['t1', token]])
+
+  it('キーワード「日常」のシーンは4枚を超えて入れられる', () => {
+    expect(canAdd(daily, { d1: 10 }, lk)).toBe(true)
+    const d = legalDeck()
+    delete d.c0; delete d.c1; delete d.c2; delete d.c3
+    d.d1 = 15
+    expect(validate(d, lk)).toEqual([])
+  })
+
+  it('トークンは追加できず、区分にも数えない', () => {
+    expect(canAdd(token, {}, lk)).toBe(false)
+    expect(validate({ ...legalDeck(), t1: 1 }, lk)).toEqual([])
+    expect(decodeDeck('1:t1.1', lk)).toBeNull()
+  })
+})
+
 describe('harmonyDistribution', () => {
   it('メインデッキだけをハーモニー別・種別ごとに数える', () => {
     const lk = new Map(lookup)
@@ -102,6 +122,17 @@ describe('共有コード', () => {
 })
 
 describe('実データ', () => {
+  it('ナイトメアナイト広場（日常シーン）は5枚目も追加できる', () => {
+    const plaza = cards.find((c) => c.cardNo === 'BP03-ER01')!
+    expect(canAdd(plaza, { [plaza.recordId]: 4 }, cardById)).toBe(true)
+  })
+
+  it('トークンはデッキに追加できない', () => {
+    const tokens = cards.filter((c) => c.type === 'トークン')
+    expect(tokens.length).toBeGreaterThan(0)
+    for (const t of tokens) expect(canAdd(t, {}, cardById)).toBe(false)
+  })
+
   it('全ストーリーにタイトルと段階がある', () => {
     for (const c of cards.filter((c) => c.type === 'ストーリー')) {
       expect(c.storyTitle).toBeTruthy()

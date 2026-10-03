@@ -1,4 +1,4 @@
-import { type Card, type CardType, isDailyScene } from './cards'
+import { type Card, type CardType, isDailyScene, isDeckCard } from './cards'
 
 /** recordId → 枚数 */
 export type DeckCards = Record<string, number>
@@ -14,7 +14,8 @@ export const SECTIONS: { key: SectionKey; label: string; size: number; types: Ca
 
 export const MAX_COPIES = 4
 
-export const sectionOf = (c: Card): SectionKey => SECTIONS.find((s) => s.types.includes(c.type))!.key
+/** カードが入る区分。トークンなどデッキに入らないカードは null */
+export const sectionOf = (c: Card): SectionKey | null => SECTIONS.find((s) => s.types.includes(c.type))?.key ?? null
 
 export interface DeckEntry {
   card: Card
@@ -25,7 +26,8 @@ export function groupBySection(deck: DeckCards, lookup: Map<string, Card>) {
   const groups: Record<SectionKey, DeckEntry[]> = { lead: [], story: [], main: [], scene: [] }
   for (const [rid, count] of Object.entries(deck)) {
     const card = lookup.get(rid)
-    if (card && count > 0) groups[sectionOf(card)].push({ card, count })
+    const section = card && sectionOf(card)
+    if (section && count > 0) groups[section].push({ card, count })
   }
   for (const g of Object.values(groups)) {
     g.sort(
@@ -52,6 +54,7 @@ export function copiesByCardNo(deck: DeckCards, lookup: Map<string, Card>) {
 
 /** そのカードをあと1枚追加できるか（枚数制限のみ。区分の上限は超えても追加は許可する） */
 export function canAdd(card: Card, deck: DeckCards, lookup: Map<string, Card>) {
+  if (!isDeckCard(card)) return false
   if (isDailyScene(card)) return true
   return (copiesByCardNo(deck, lookup).get(card.cardNo) ?? 0) < MAX_COPIES
 }
@@ -105,7 +108,8 @@ export function decodeDeck(code: string, lookup: Map<string, Card>): DeckCards |
   for (const part of body.split('-').filter(Boolean)) {
     const [rid, n] = part.split('.')
     const count = Number(n)
-    if (!lookup.has(rid) || !Number.isInteger(count) || count <= 0) return null
+    const card = lookup.get(rid)
+    if (!card || !isDeckCard(card) || !Number.isInteger(count) || count <= 0) return null
     deck[rid] = count
   }
   return deck

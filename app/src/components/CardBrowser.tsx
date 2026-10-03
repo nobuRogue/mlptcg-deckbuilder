@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { CARD_TYPES, type Card, RARITIES, SUB_SERIES, cards } from '../lib/cards'
+import { CARD_TYPES, type Card, RARITIES, SUB_SERIES, cards, isDailyScene, isDeckCard } from '../lib/cards'
 import { CardZoom } from './CardZoom'
 
 interface Props {
@@ -67,10 +67,17 @@ export function CardBrowser({ countOf, onAdd, onShow }: Props) {
       <ul className="grid">
         {filtered.map((c) => {
           const n = countOf(c)
+          const deckCard = isDeckCard(c)
           return (
             <li key={c.recordId} className="tile">
               <div className="tile-frame">
-                <button type="button" className="tile-img" onClick={() => onAdd(c)} title="クリックでデッキに追加">
+                <button
+                  type="button"
+                  className="tile-img"
+                  onClick={() => deckCard && onAdd(c)}
+                  title={deckCard ? 'クリックでデッキに追加' : 'トークンはデッキに入れられません'}
+                  style={deckCard ? undefined : { cursor: 'default' }}
+                >
                   <img src={c.image} alt={c.name} loading="lazy" />
                   {n > 0 && <span className="badge">{n}</span>}
                 </button>
@@ -88,7 +95,11 @@ export function CardBrowser({ countOf, onAdd, onShow }: Props) {
                 </button>
               </div>
               <button type="button" className="tile-info" onClick={() => onShow(c)}>
-                <span className="tile-no">{c.id}</span>
+                <span className="tile-no">
+                  {c.id}
+                  {!deckCard && <span className="tag">デッキ外</span>}
+                  {isDailyScene(c) && <span className="tag">日常</span>}
+                </span>
                 <span className="tile-name">{c.name}</span>
               </button>
             </li>

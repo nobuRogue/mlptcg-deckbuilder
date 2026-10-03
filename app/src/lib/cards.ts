@@ -1,7 +1,7 @@
 import data from '../data/cards.json'
 import overrides from '../data/overrides.json'
 
-export type CardType = 'キャラ' | 'イベント' | 'アイテム' | 'シーン' | 'ストーリー' | '主役'
+export type CardType = 'キャラ' | 'イベント' | 'アイテム' | 'シーン' | 'ストーリー' | '主役' | 'トークン'
 
 export interface Card {
   recordId: string
@@ -28,9 +28,14 @@ export const fetchedAt = data.fetchedAt
 export const cardById = new Map(cards.map((c) => [c.recordId, c]))
 
 const dailySceneCardNos = new Set<string>(overrides.dailySceneCardNos)
-export const isDailyScene = (c: Card) => c.type === 'シーン' && dailySceneCardNos.has(c.cardNo)
+/** 日常シーン（枚数制限なし）。公式データのキーワード「日常」で判定し、overrides で補える */
+export const isDailyScene = (c: Card) =>
+  c.type === 'シーン' && (c.keywords.includes('日常') || dailySceneCardNos.has(c.cardNo))
 
-export const CARD_TYPES: CardType[] = ['キャラ', 'イベント', 'アイテム', 'シーン', 'ストーリー', '主役']
+/** トークンはゲーム中に用意する目印で、デッキには入れられない（コアルール 第二節 7.1.0） */
+export const isDeckCard = (c: Card) => c.type !== 'トークン'
+
+export const CARD_TYPES: CardType[] = ['キャラ', 'イベント', 'アイテム', 'シーン', 'ストーリー', '主役', 'トークン']
 
 const uniq = <T,>(xs: T[]) => [...new Set(xs)]
 export const SUB_SERIES = uniq(cards.map((c) => c.subSeries))
