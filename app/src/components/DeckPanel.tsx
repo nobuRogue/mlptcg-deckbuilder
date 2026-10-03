@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { type Card, cardById } from '../lib/cards'
 import { SECTIONS, deckToText, encodeDeck, groupBySection, sectionTotal, validate } from '../lib/deck'
 import type { SavedDeck } from '../lib/storage'
+import { DeckView } from './DeckView'
 import { HarmonyChart } from './HarmonyChart'
 
 interface Props {
@@ -22,6 +23,7 @@ export function DeckPanel(p: Props) {
   const groups = groupBySection(p.deck.cards, cardById)
   const errors = validate(p.deck.cards, cardById)
   const [notice, setNotice] = useState('')
+  const [viewing, setViewing] = useState(false)
 
   const copy = async (text: string, label: string) => {
     try {
@@ -59,9 +61,11 @@ export function DeckPanel(p: Props) {
           <button type="button" onClick={() => copy(deckToText(p.deck.name, p.deck.cards, cardById), 'テキスト')}>
             テキストをコピー
           </button>
+          <button type="button" onClick={() => setViewing(true)}>デッキビュー</button>
         </div>
         {notice && <div className="notice">{notice}</div>}
       </div>
+      {viewing && <DeckView deck={p.deck} onClose={() => setViewing(false)} />}
 
       {errors.length === 0 ? (
         <div className="ok">構築ルールを満たしています</div>
