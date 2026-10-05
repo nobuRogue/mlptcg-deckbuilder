@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { type Card, isDailyScene, isDeckCard } from '../lib/cards'
+import { type Card, isDaily, isDeckCard } from '../lib/cards'
 import { EffectText } from './EffectText'
 
 interface Props {
@@ -34,7 +34,7 @@ export function CardModal({ card, count, canAdd, onAdd, onRemove, onClose }: Pro
             {card.keywords.length > 0 && (<><dt>キーワード</dt><dd>{card.keywords.join(' / ')}</dd></>)}
           </dl>
           {card.effect && <EffectText text={card.effect} />}
-          {isDailyScene(card) && <p className="note">日常シーン：同じカードを何枚でもシーンデッキに入れられます</p>}
+          {isDaily(card) && <p className="note">日常：同じカードを4枚を超えて何枚でも入れられます</p>}
           {isDeckCard(card) ? (
             <div className="counter">
               <button type="button" onClick={onRemove} disabled={count === 0}>−</button>

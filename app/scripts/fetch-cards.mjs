@@ -1,6 +1,6 @@
 // 公式カードリストページの __NEXT_DATA__ からカードデータを抽出し、src/data/cards.json に保存する。
 // 使い方: npm run fetch-cards
-import { writeFile, mkdir } from 'node:fs/promises'
+import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
 const SOURCE_URL = 'https://www.mlptcg-jp.com/cardlist'
 const OUT_FILE = new URL('../src/data/cards.json', import.meta.url)
@@ -45,6 +45,19 @@ const cards = raw
 
 const ids = new Set(cards.map((c) => c.recordId))
 if (ids.size !== cards.length) throw new Error('recordId が重複しています。')
+
+// 日常マークの確認漏れ検出: 公式キーワードにも overrides にも無いシーンは、画像で日常マークを確認して
+// overrides.json の dailyCardNos（日常）か nonDailyCardNos（日常でない）に登録する
+const overrides = JSON.parse(await readFile(new URL('../src/data/overrides.json', import.meta.url), 'utf8'))
+const known = new Set([...overrides.dailyCardNos, ...overrides.nonDailyCardNos])
+const unchecked = [
+  ...new Set(
+    cards.filter((c) => c.type === 'シーン' && !c.keywords.includes('日常') && !known.has(c.cardNo)).map((c) => c.cardNo),
+  ),
+]
+if (unchecked.length) {
+  console.warn(`⚠ 日常マーク未確認のシーン（画像を確認して overrides.json に登録してください）: ${unchecked.join(', ')}`)
+}
 
 await mkdir(new URL('.', OUT_FILE), { recursive: true })
 await writeFile(

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { CARD_TYPES, type Card, RARITIES, SUB_SERIES, cards, isDailyScene, isDeckCard } from '../lib/cards'
+import { CARD_TYPES, type Card, RARITIES, SUB_SERIES, cards, isDaily, isDeckCard } from '../lib/cards'
 import { CardZoom } from './CardZoom'
 
 interface Props {
@@ -98,7 +98,7 @@ export function CardBrowser({ countOf, onAdd, onShow }: Props) {
                 <span className="tile-no">
                   {c.id}
                   {!deckCard && <span className="tag">デッキ外</span>}
-                  {isDailyScene(c) && <span className="tag">日常</span>}
+                  {isDaily(c) && <span className="tag">日常</span>}
                 </span>
                 <span className="tile-name">{c.name}</span>
               </button>

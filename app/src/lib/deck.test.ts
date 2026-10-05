@@ -127,6 +127,17 @@ describe('実データ', () => {
     expect(canAdd(plaza, { [plaza.recordId]: 4 }, cardById)).toBe(true)
   })
 
+  it('現行のシーンは全て日常（画像で確認済み）で、5枚目も追加できる', () => {
+    const scenes = cards.filter((c) => c.type === 'シーン')
+    expect(scenes.length).toBeGreaterThan(0)
+    for (const s of scenes) expect(canAdd(s, { [s.recordId]: 4 }, cardById)).toBe(true)
+  })
+
+  it('日常でないキャラは4枚まで', () => {
+    const chara = cards.find((c) => c.type === 'キャラ')!
+    expect(canAdd(chara, { [chara.recordId]: 4 }, cardById)).toBe(false)
+  })
+
   it('トークンはデッキに追加できない', () => {
     const tokens = cards.filter((c) => c.type === 'トークン')
     expect(tokens.length).toBeGreaterThan(0)

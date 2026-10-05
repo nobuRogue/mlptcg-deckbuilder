@@ -27,10 +27,12 @@ export const fetchedAt = data.fetchedAt
 
 export const cardById = new Map(cards.map((c) => [c.recordId, c]))
 
-const dailySceneCardNos = new Set<string>(overrides.dailySceneCardNos)
-/** 日常シーン（枚数制限なし）。公式データのキーワード「日常」で判定し、overrides で補える */
-export const isDailyScene = (c: Card) =>
-  c.type === 'シーン' && (c.keywords.includes('日常') || dailySceneCardNos.has(c.cardNo))
+const dailyCardNos = new Set<string>(overrides.dailyCardNos)
+/**
+ * 「日常」タグを持つカード（同一カードナンバーの枚数制限なし。主にシーン）。
+ * 公式データのキーワード「日常」で判定する。キーワードが欠けているカードは overrides.json の dailyCardNos で補う。
+ */
+export const isDaily = (c: Card) => c.keywords.includes('日常') || dailyCardNos.has(c.cardNo)
 
 /** トークンはゲーム中に用意する目印で、デッキには入れられない（コアルール 第二節 7.1.0） */
 export const isDeckCard = (c: Card) => c.type !== 'トークン'

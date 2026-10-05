@@ -1,4 +1,11 @@
 {
- "$comment": "公式データに無い情報を手で補う。dailySceneCardNos: 日常シーンのカードナンバー（※なし）",
- "dailySceneCardNos": []
+ "$comment": "公式データに無い情報を手で補う。カードナンバーは先頭の※なし。dailyCardNos: カード画像に「日常」マークがあるのに公式データのキーワードに「日常」が無いカード。nonDailyCardNos: カード画像で「日常」マークが無いことを確認したシーン。どちらにも無いシーンは fetch-cards で警告する。",
+ "$verified": "2026-10-05 シーン全20種の画像を目視確認（全て日常マークあり。BP03-ER01 は公式キーワードに日常あり）",
+ "dailyCardNos": [
+  "SD01-ER01", "SD01-ER02", "SD01-ER03", "SD01-ER04", "SD01-ER05", "SD01-ER06",
+  "SD01-ER07", "SD01-ER08", "SD01-ER09", "SD01-ER10", "SD01-ER11", "SD01-ER12",
+  "BP02-ER01", "BP02-ER02", "BP02-ER03", "BP02-ER04", "BP02-ER05", "BP02-ER06",
+  "BP03-ER02"
+ ],
+ "nonDailyCardNos": []
 }

@@ -1,4 +1,4 @@
-import { type Card, type CardType, isDailyScene, isDeckCard } from './cards'
+import { type Card, type CardType, isDaily, isDeckCard } from './cards'
 
 /** recordId → 枚数 */
 export type DeckCards = Record<string, number>
@@ -55,7 +55,7 @@ export function copiesByCardNo(deck: DeckCards, lookup: Map<string, Card>) {
 /** そのカードをあと1枚追加できるか（枚数制限のみ。区分の上限は超えても追加は許可する） */
 export function canAdd(card: Card, deck: DeckCards, lookup: Map<string, Card>) {
   if (!isDeckCard(card)) return false
-  if (isDailyScene(card)) return true
+  if (isDaily(card)) return true
   return (copiesByCardNo(deck, lookup).get(card.cardNo) ?? 0) < MAX_COPIES
 }
 
@@ -72,7 +72,7 @@ export function validate(deck: DeckCards, lookup: Map<string, Card>): string[] {
   for (const [cardNo, n] of copies) {
     if (n <= MAX_COPIES) continue
     const card = [...lookup.values()].find((c) => c.cardNo === cardNo)!
-    if (isDailyScene(card)) continue
+    if (isDaily(card)) continue
     errors.push(`${cardNo}「${card.name}」が${n}枚入っています（最大${MAX_COPIES}枚）`)
   }
 
