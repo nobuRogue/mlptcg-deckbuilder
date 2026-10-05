@@ -127,10 +127,17 @@ describe('実データ', () => {
     expect(canAdd(plaza, { [plaza.recordId]: 4 }, cardById)).toBe(true)
   })
 
-  it('現行のシーンは全て日常（画像で確認済み）で、5枚目も追加できる', () => {
-    const scenes = cards.filter((c) => c.type === 'シーン')
+  it('ナイトメアナイト市場以外の現行シーンは日常（画像で確認済み）で、5枚目も追加できる', () => {
+    const scenes = cards.filter((c) => c.type === 'シーン' && c.cardNo !== 'BP03-ER02')
     expect(scenes.length).toBeGreaterThan(0)
     for (const s of scenes) expect(canAdd(s, { [s.recordId]: 4 }, cardById)).toBe(true)
+  })
+
+  it('ナイトメアナイト市場（日常マークなし）は※版・別イラストと合わせて4枚まで', () => {
+    const market = cards.filter((c) => c.cardNo === 'BP03-ER02')
+    expect(market.length).toBeGreaterThan(1)
+    expect(canAdd(market[0], { [market[1].recordId]: 4 }, cardById)).toBe(false)
+    expect(canAdd(market[0], { [market[1].recordId]: 3 }, cardById)).toBe(true)
   })
 
   it('日常でないキャラは4枚まで', () => {
