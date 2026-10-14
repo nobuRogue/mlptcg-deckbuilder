@@ -538,6 +538,12 @@ header h1 {
   color: var(--muted);
 }
 
+.dv-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
 .dv-sheet {
   --cell: 78px;
   max-width: 1080px;

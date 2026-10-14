@@ -1,8 +1,9 @@
-import { type CSSProperties, Fragment, useEffect } from 'react'
+import { type CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { type CardType, cardById } from '../lib/cards'
 import { SECTIONS, groupBySection, sectionTotal, validate } from '../lib/deck'
 import type { SavedDeck } from '../lib/storage'
+import { canCaptureScreen, captureElement, downloadBlob } from '../lib/capture'
 import { HarmonyChart } from './HarmonyChart'
 
 const TYPE_ORDER: CardType[] = ['主役', 'ストーリー', 'キャラ', 'イベント', 'アイテム', 'シーン']
@@ -27,15 +28,58 @@ export function DeckView({ deck, onClose }: { deck: SavedDeck; onClose: () => vo
   const legal = validate(deck.cards, cardById).length === 0
   const hasMain = sections.main.length > 0
 
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const [busy, setBusy] = useState(false)
+  const [notice, setNotice] = useState('')
+
+  // クリップボード書き込みはクリック直後に開始する（共有ダイアログを挟むとユーザー操作扱いが切れるため、
+  // 画像は Promise のまま ClipboardItem に渡す）
+  const copyAsImage = async () => {
+    if (!sheetRef.current || busy) return
+    setBusy(true)
+    setNotice('')
+    const blobPromise = captureElement(sheetRef.current)
+    blobPromise.catch(() => {})
+    try {
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blobPromise })])
+      setNotice('画像をクリップボードにコピーしました')
+    } catch {
+      let blob: Blob
+      try {
+        blob = await blobPromise
+      } catch (e) {
+        const cancelled = e instanceof DOMException && e.name === 'NotAllowedError'
+        setNotice(cancelled ? 'キャプチャがキャンセルされました' : `キャプチャに失敗しました（${(e as Error).message}）`)
+        return
+      }
+      downloadBlob(blob, `${deck.name || 'deck'}.png`)
+      setNotice('クリップボードにコピーできなかったため、PNG ファイルとして保存しました')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   // デッキ欄はスマホ表示で非表示になることがあるため、body 直下に描画する
   return createPortal(
     <div className="dv-bg" role="dialog" aria-label="デッキビュー">
       <div className="dv-toolbar">
-        <span>この画面をスクリーンショットすると画像で共有できます（Windows: Win + Shift + S）</span>
-        <button type="button" onClick={onClose} autoFocus>閉じる</button>
+        <span>
+          {notice ||
+            (canCaptureScreen()
+              ? '「画像としてコピー」→ 共有ダイアログで「このタブ」を許可すると、デッキ部分を画像にします'
+              : 'この画面をスクリーンショットすると画像で共有できます（Windows: Win + Shift + S）')}
+        </span>
+        <span className="dv-actions">
+          {canCaptureScreen() && (
+            <button type="button" className="primary" onClick={copyAsImage} disabled={busy}>
+              {busy ? 'キャプチャ中…' : '画像としてコピー'}
+            </button>
+          )}
+          <button type="button" onClick={onClose} autoFocus>閉じる</button>
+        </span>
       </div>
 
-      <div className="dv-sheet">
+      <div className="dv-sheet" ref={sheetRef}>
         <header className="dv-head">
           <h2>{deck.name || '無題のデッキ'}</h2>
           <p>
