@@ -671,6 +671,123 @@ header h1 {
   color: var(--muted);
 }
 
+/* ---- カードリスト（文字のみ・画像共有用） ---- */
+
+.cl-toolbar,
+.cl-sheet {
+  max-width: 920px;
+}
+
+.cl-sheet {
+  margin: 0 auto;
+  background: #fff;
+  color: var(--text);
+  border-radius: 12px;
+  padding: 20px 24px 12px;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.08);
+}
+
+.cl-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  margin-top: 12px;
+}
+
+.cl-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.cl-table caption {
+  text-align: left;
+  font-weight: bold;
+  font-size: 14px;
+  padding-bottom: 4px;
+}
+
+.cl-table caption span {
+  margin-left: 6px;
+  font-weight: normal;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cl-story-title {
+  font-weight: normal;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.cl-table th,
+.cl-table td {
+  border: 1px solid #ddd3e2;
+  padding: 3px 6px;
+  vertical-align: middle;
+}
+
+.cl-table thead th {
+  background: var(--accent);
+  color: #fff;
+  font-weight: bold;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.cl-table tr.cl-sub th,
+.cl-table tr.cl-sub td {
+  background: var(--accent-soft);
+  text-align: left;
+  font-size: 12px;
+}
+
+.cl-table tr.cl-sub td {
+  text-align: center;
+  font-weight: bold;
+}
+
+.cl-table .id {
+  white-space: nowrap;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 11.5px;
+  color: #5b5160;
+  width: 1%;
+}
+
+.cl-table .num {
+  text-align: center;
+  white-space: nowrap;
+  width: 1%;
+  font-variant-numeric: tabular-nums;
+}
+
+.cl-table .cl-count {
+  font-weight: bold;
+}
+
+.cl-empty {
+  color: var(--muted);
+  text-align: center;
+}
+
+.cl-tag {
+  margin-left: 4px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 10px;
+}
+
 /* ---- モーダル ---- */
 
 .modal-bg {
@@ -833,6 +950,14 @@ header h1 {
 
   .dv-grid {
     grid-template-columns: repeat(min(var(--cols), 5), var(--cell));
+  }
+
+  .cl-sheet {
+    padding: 14px 12px 10px;
+  }
+
+  .cl-columns {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .modal img {
