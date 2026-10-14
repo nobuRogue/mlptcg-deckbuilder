@@ -36,7 +36,13 @@ export function CardListView({ deck, onClose }: { deck: SavedDeck; onClose: () =
     if (!sheetRef.current || busy) return
     setBusy(true)
     setNotice('')
-    const blobPromise = toBlob(sheetRef.current, { pixelRatio: 2, backgroundColor: '#ffffff', skipFonts: true }).then(
+    const blobPromise = toBlob(sheetRef.current, {
+      pixelRatio: 2,
+      backgroundColor: '#ffffff',
+      skipFonts: true,
+      // 画面中央寄せの margin: auto が複製にも残り、画像内で右にずれてはみ出すため消す
+      style: { margin: '0', boxShadow: 'none' },
+    }).then(
       (b) => b ?? Promise.reject(new Error('画像の生成に失敗しました')),
     )
     blobPromise.catch(() => {})
