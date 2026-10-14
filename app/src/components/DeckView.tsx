@@ -1,8 +1,9 @@
-import { type CSSProperties, useEffect } from 'react'
+import { type CSSProperties, Fragment, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { type CardType, cardById } from '../lib/cards'
 import { SECTIONS, groupBySection, sectionTotal, validate } from '../lib/deck'
 import type { SavedDeck } from '../lib/storage'
+import { HarmonyChart } from './HarmonyChart'
 
 const TYPE_ORDER: CardType[] = ['主役', 'ストーリー', 'キャラ', 'イベント', 'アイテム', 'シーン']
 /** 1種別のグループが1行に並べる最大セル数（ストーリーは1枚2セル） */
@@ -24,6 +25,7 @@ export function DeckView({ deck, onClose }: { deck: SavedDeck; onClose: () => vo
     return { type, items, total: sectionTotal(items), cols: Math.min(cells, MAX_COLS) }
   }).filter((g) => g.items.length > 0)
   const legal = validate(deck.cards, cardById).length === 0
+  const hasMain = sections.main.length > 0
 
   // デッキ欄はスマホ表示で非表示になることがあるため、body 直下に描画する
   return createPortal(
@@ -46,7 +48,8 @@ export function DeckView({ deck, onClose }: { deck: SavedDeck; onClose: () => vo
 
         <div className="dv-groups">
         {groups.map((g) => (
-          <section key={g.type} className="dv-group" style={{ '--cols': g.cols } as CSSProperties}>
+          <Fragment key={g.type}>
+          <section className="dv-group" style={{ '--cols': g.cols } as CSSProperties}>
             <h3>
               {g.type}
               <span>{g.total}枚</span>
@@ -60,7 +63,11 @@ export function DeckView({ deck, onClose }: { deck: SavedDeck; onClose: () => vo
               ))}
             </ul>
           </section>
+          {/* ハーモニー分布はストーリーの後ろ（主役・ストーリーの行の空き）に置く */}
+          {g.type === 'ストーリー' && hasMain && <HarmonyChart deck={deck.cards} variant="view" />}
+          </Fragment>
         ))}
+        {!groups.some((g) => g.type === 'ストーリー') && hasMain && <HarmonyChart deck={deck.cards} variant="view" />}
         </div>
 
         <footer className="dv-foot">

@@ -648,6 +648,16 @@ header h1 {
   font-variant-numeric: tabular-nums;
 }
 
+/* デッキビュー内のハーモニー分布 */
+/* 主役＋ストーリー4枚の行の右側の空き（約245px）に収まる幅 */
+.dv-chart {
+  width: 236px;
+}
+
+.dv-chart .hc-legend {
+  margin-top: 2px;
+}
+
 .dv-foot {
   margin-top: 14px;
   text-align: right;
